@@ -15,8 +15,10 @@ libraryDependencies ++= Seq(
 
 // scalikeJDBC
 libraryDependencies ++= Seq(
-  "org.scalikejdbc" %% "scalikejdbc"             % "2.2.+",
-  "org.scalikejdbc" %% "scalikejdbc-play-plugin" % "2.3.+",
+  "org.scalikejdbc" %% "scalikejdbc"                       % "2.2.+",
+  "org.scalikejdbc" %% "scalikejdbc-config"                % "2.2.+",
+  "org.scalikejdbc" %% "scalikejdbc-play-plugin"           % "2.3.+",
+  "org.scalikejdbc" %% "scalikejdbc-play-fixture-plugin"   % "2.3.+", // optional
   "com.h2database"  %  "h2"                % "1.4.186",
   "ch.qos.logback"  %  "logback-classic"   % "1.1.2"
 )
