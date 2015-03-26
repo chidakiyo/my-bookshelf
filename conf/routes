@@ -5,5 +5,9 @@
 # Home page
 GET     /                           controllers.Application.index
 
+# Book
+GET     /books/:id                    controllers.Books.show(id: Long)
+DELETE  /books/:id                    controllers.Books.delete(id: Long)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
