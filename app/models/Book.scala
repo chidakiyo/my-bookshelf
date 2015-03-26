@@ -1,72 +1,44 @@
 package models
 
-import scalikejdbc._
 import org.joda.time.DateTime
 
 case class Book( //
   id: Long, //
   name: String, //
   isbn: String, //
-  createdAt: DateTime, //
-  deletedAt: Option[DateTime] = None //
+  createdAt: DateTime //
   ) {
 
-  def save()(implicit session: DBSession = Book.autoSession): Book = Book.save(this)(session)
-  def destroy()(implicit session: DBSession = Book.autoSession): Unit = Book.destroy(id)(session)
-
+  def save(): Book = Book.save(this)
+  def destroy(): Unit = Book.destroy(id)
 }
 
-object Book extends SQLSyntaxSupport[Book] {
+object Book {
 
-  override val tableName = "book"
-  override val columns = Seq("id", "name", "isbn", "created_at", "deleted_at")
+  var registry: List[Book] = List( //
+    Book(1, "Book1", "B1234", new DateTime()), //
+    Book(2, "Book2", "B5678", new DateTime()) //
+    )
 
-  def apply(p: SyntaxProvider[Book])(rs: WrappedResultSet): Book = apply(p.resultName)(rs)
-  def apply(p: ResultName[Book])(rs: WrappedResultSet): Book = new Book(
-    id = rs.get(p.id),
-    name = rs.get(p.name),
-    isbn = rs.get(p.isbn),
-    createdAt = rs.get(p.createdAt),
-    deletedAt = rs.get(p.deletedAt))
+  def find(id: Long): Option[Book] = registry.find(_.id == id)
 
-  val b = Book.syntax("b")
+  def findAll(): List[Book] = registry
 
-  def find(id: Long)(implicit session: DBSession = autoSession): Option[Book] = withSQL {
-    select.from(Book as b).where.eq(b.id, id)
-  }.map(Book(b.resultName)).single.apply()
-
-  def findAll()(implicit session: DBSession = autoSession): List[Book] = withSQL {
-    select
-      .from(Book as b)
-      .orderBy(b.id)
-  }.map(Book(b.resultName)).list.apply()
-
-  def create(name: String, isbn: String, createdAt: DateTime = DateTime.now)(implicit session: DBSession = autoSession): Book = {
-    val id = withSQL {
-      insert.into(Book).namedValues(
-        column.name -> name,
-        column.isbn -> isbn,
-        column.createdAt -> createdAt)
-    }.updateAndReturnGeneratedKey.apply()
-
-    Book(
-      id = id,
-      name = name,
-      isbn = isbn,
-      createdAt = createdAt)
+  def create(name: String, isbn: String, createdAt: DateTime = DateTime.now): Book = {
+    val maxId = registry.map(_.id).max
+    val book = Book(maxId + 1, name, isbn, createdAt)
+    registry = book :: registry
+    book
   }
 
-  def save(m: Book)(implicit session: DBSession = autoSession): Book = {
-    withSQL {
-      update(Book).set(
-        column.name -> m.name,
-        column.isbn -> m.isbn).where.eq(column.id, m.id)
-    }.update.apply()
+  def save(m: Book): Book = {
+    registry = registry.filterNot(_.id == m.id)
+    registry = m :: registry
     m
   }
 
-  def destroy(id: Long)(implicit session: DBSession = autoSession): Unit = withSQL {
-    update(Book).set(column.deletedAt -> DateTime.now).where.eq(column.id, id)
-  }.update.apply()
+  def destroy(id: Long): Unit = {
+    registry = registry.filterNot(_.id == id)
+  }
 
 }

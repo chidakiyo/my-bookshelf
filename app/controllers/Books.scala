@@ -5,7 +5,7 @@ import play.api.mvc._
 import models._
 import play.api.data._
 import play.api.data.Forms._
-import models.Book
+import org.joda.time.DateTime
 
 case class BookForm(name: String, isbn: String)
 
@@ -19,17 +19,17 @@ object Books extends Controller {
 
   def all() = Action {
     val books = Book.findAll()
-    Ok(views.html.list(books))
-  }
-
-  def show(id: Long) = Action {
-    Book.find(id).map { book =>
-      NoContent
-    }.getOrElse(NotFound)
+    Ok(views.html.list(books.sortBy(_.id)))
   }
 
   def create() = Action {
     Ok(views.html.createForm(bookForm))
+  }
+
+  def edit(id: Long) = Action {
+    Book.find(id).map { book =>
+      Ok(views.html.editForm(id, bookForm.fill(BookForm(book.name, book.isbn))))
+    }.getOrElse(NotFound)
   }
 
   def save() = Action { implicit req =>
@@ -38,7 +38,18 @@ object Books extends Controller {
       form => {
         Book.create(name = form.name, isbn = form.isbn)
         val books = Book.findAll()
-        Ok(views.html.list(books))
+        Ok(views.html.list(books.sortBy(_.id)))
+      })
+  }
+
+  def update(id: Long) = Action { implicit request =>
+    bookForm.bindFromRequest.fold(
+      formWithErrors => BadRequest("invalid parameters"),
+      form => {
+        val book = Book(id, form.name, form.isbn, new DateTime())
+        book.save
+        val books = Book.findAll()
+        Ok(views.html.list(books.sortBy(_.id)))
       })
   }
 

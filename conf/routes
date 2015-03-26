@@ -6,10 +6,11 @@
 GET     /                           controllers.Application.index
 
 # Book
-GET     /v1/books/:id                    controllers.Books.show(id: Long)
-GET     /v1/books/                       controllers.Books.all()
-GET     /v1/books/new/                    controllers.Books.create
-POST    /v1/books                        controllers.Books.save
+GET     /v1/books/                       controllers.Books.all
+GET     /v1/books/:id                    controllers.Books.edit(id: Long)
+POST    /v1/books/:id                    controllers.Books.update(id: Long)
+GET     /v1/books/new/                   controllers.Books.create
+POST    /v1/books/                       controllers.Books.save
 DELETE  /v1/books/:id                    controllers.Books.delete(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
