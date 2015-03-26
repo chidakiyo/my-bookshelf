@@ -1,0 +1,32 @@
+@(books: List[Book])
+
+@main("my-bookshelf") {
+
+  @*********************
+   * book list         *
+   *********************@  
+    <table  border="1">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>name</th>
+          <th>isbn</th>
+          <th>createdAt</th>
+        </tr>
+      </thead>
+      <tbody>
+        @books.map { book =>
+          <tr>
+           <td>@book.id</td>
+           <td>@book.name</td>
+           <td>@book.isbn</td>
+           <td>@book.createdAt</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    
+    <div id="actions">
+      <a href="@routes.Books.create()">New</a>
+    </div>
+}
