@@ -35,6 +35,27 @@ object Book extends SQLSyntaxSupport[Book] {
     select.from(Book as b).where.eq(b.id, id)
   }.map(Book(b.resultName)).single.apply()
 
+  def findAll()(implicit session: DBSession = autoSession): List[Book] = withSQL {
+    select
+      .from(Book as b)
+      .orderBy(b.id)
+  }.map(Book(b.resultName)).list.apply()
+
+  def create(name: String, isbn: String, createdAt: DateTime = DateTime.now)(implicit session: DBSession = autoSession): Book = {
+    val id = withSQL {
+      insert.into(Book).namedValues(
+        column.name -> name,
+        column.isbn -> isbn,
+        column.createdAt -> createdAt)
+    }.updateAndReturnGeneratedKey.apply()
+
+    Book(
+      id = id,
+      name = name,
+      isbn = isbn,
+      createdAt = createdAt)
+  }
+
   def save(m: Book)(implicit session: DBSession = autoSession): Book = {
     withSQL {
       update(Book).set(
