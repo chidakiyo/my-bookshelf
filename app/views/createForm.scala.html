@@ -1,0 +1,25 @@
+@(bookForm: Form[BookForm])
+
+@import helper._
+
+@main("my-bookshelf") {
+
+  @*********************
+   * create book       *
+   *********************@
+   
+    <h1>Add a book</h1>
+    
+    @form(routes.Books.save()) {
+        <fieldset>
+            @inputText(bookForm("name"), '_label -> "Book name")
+            @inputText(bookForm("isbn"), '_label -> "ISBN")
+        </fieldset>
+        
+        <div>
+            <input type="submit" value="Create this book">
+        </div>
+        
+    }
+    
+}
