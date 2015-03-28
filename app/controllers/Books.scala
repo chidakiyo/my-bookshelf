@@ -6,10 +6,14 @@ import models._
 import play.api.data._
 import play.api.data.Forms._
 import org.joda.time.DateTime
+import org.json4s._, ext.JodaTimeSerializers, native.JsonMethods._
+import com.github.tototoshi.play2.json4s.native._
 
 case class BookForm(name: String, isbn: String)
 
-object Books extends Controller {
+object Books extends Controller with Json4s {
+
+  implicit val formats = DefaultFormats ++ JodaTimeSerializers.all
 
   val bookForm = Form(
     mapping( //
@@ -18,27 +22,19 @@ object Books extends Controller {
       )(BookForm.apply)(BookForm.unapply))
 
   def all() = Action {
-    val books = Book.findAll()
-    Ok(views.html.list(books.sortBy(_.id)))
+    Ok(Extraction.decompose(Book.findAll))
   }
 
-  def create() = Action {
-    Ok(views.html.createForm(bookForm))
+  def show(id: Long) = Action {
+    Book.find(id).map { book => Ok(Extraction.decompose(book)) }.getOrElse(NotFound)
   }
 
-  def edit(id: Long) = Action {
-    Book.find(id).map { book =>
-      Ok(views.html.editForm(id, bookForm.fill(BookForm(book.name, book.isbn))))
-    }.getOrElse(NotFound)
-  }
-
-  def save() = Action { implicit req =>
+  def create() = Action { implicit request =>
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
         Book.create(name = form.name, isbn = form.isbn)
-        val books = Book.findAll()
-        Ok(views.html.list(books.sortBy(_.id)))
+        NoContent
       })
   }
 
@@ -48,8 +44,7 @@ object Books extends Controller {
       form => {
         val book = Book(id, form.name, form.isbn, new DateTime())
         book.save
-        val books = Book.findAll()
-        Ok(views.html.list(books.sortBy(_.id)))
+        NoContent
       })
   }
 
