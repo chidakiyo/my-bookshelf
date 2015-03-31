@@ -15,14 +15,22 @@ case class Book( //
 
 object Book {
 
+  var currentId = 1
+
+  def apply(name: String, isbn: String): Book = {
+    val book = Book(currentId, name, isbn)
+    currentId = currentId + 1
+    book
+  }
+
   var registry: List[Book] = List( //
-    Book(1, "Book1", "B1234"), //
-    Book(2, "Book2", "B5678") //
+    Book("Book1", "B1234"), //
+    Book("Book2", "B5678") //
     )
 
   def find(id: Long): Option[Book] = registry.find(_.id == id)
 
-  def findAll(): List[Book] = registry
+  def all(): List[Book] = registry
 
   def create(name: String, isbn: String, createdAt: DateTime = DateTime.now): Book = {
     val maxId = registry.map(_.id).max

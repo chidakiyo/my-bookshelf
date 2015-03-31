@@ -18,7 +18,7 @@ object Books extends Controller {
       )(BookForm.apply)(BookForm.unapply))
 
   def all() = Action {
-    val books = Book.findAll()
+    val books = Book.all()
     Ok(views.html.list(books.sortBy(_.id)))
   }
 
@@ -37,7 +37,7 @@ object Books extends Controller {
       formWithErrors => BadRequest("invalid parameters"),
       form => {
         Book.create(name = form.name, isbn = form.isbn)
-        val books = Book.findAll()
+        val books = Book.all()
         Ok(views.html.list(books.sortBy(_.id)))
       })
   }
@@ -46,9 +46,9 @@ object Books extends Controller {
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
-        val book = Book(id, form.name, form.isbn)
+        val book = Book(form.name, form.isbn)
         book.save
-        val books = Book.findAll()
+        val books = Book.all()
         Ok(views.html.list(books.sortBy(_.id)))
       })
   }
