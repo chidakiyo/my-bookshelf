@@ -6,7 +6,7 @@ case class Book( //
   id: Long, //
   name: String, //
   isbn: String, //
-  createdAt: DateTime //
+  createdAt: DateTime = new DateTime //
   ) {
 
   def save(): Book = Book.save(this)
@@ -16,8 +16,8 @@ case class Book( //
 object Book {
 
   var registry: List[Book] = List( //
-    Book(1, "Book1", "B1234", new DateTime()), //
-    Book(2, "Book2", "B5678", new DateTime()) //
+    Book(1, "Book1", "B1234"), //
+    Book(2, "Book2", "B5678") //
     )
 
   def find(id: Long): Option[Book] = registry.find(_.id == id)
