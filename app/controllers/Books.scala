@@ -46,7 +46,7 @@ object Books extends Controller {
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
-        val book = Book(form.name, form.isbn)
+        val book = Book(id, form.name, form.isbn)
         book.save
         val books = Book.all()
         Ok(views.html.list(books.sortBy(_.id)))
