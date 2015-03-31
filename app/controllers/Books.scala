@@ -11,6 +11,9 @@ case class BookForm(name: String, isbn: String)
 
 object Books extends Controller {
 
+  //  val bookRepository = MongoRepository
+  val bookRepository = DummyRepository
+
   val bookForm = Form(
     mapping( //
       "name" -> text, //
@@ -18,7 +21,7 @@ object Books extends Controller {
       )(BookForm.apply)(BookForm.unapply))
 
   def all() = Action {
-    val books = Book.all()
+    val books = bookRepository.all()
     Ok(views.html.list(books.sortBy(_.id)))
   }
 
@@ -26,8 +29,8 @@ object Books extends Controller {
     Ok(views.html.createForm(bookForm))
   }
 
-  def edit(id: Long) = Action {
-    Book.find(id).map { book =>
+  def edit(id: String) = Action {
+    bookRepository.find(id).map { book =>
       Ok(views.html.editForm(id, bookForm.fill(BookForm(book.name, book.isbn))))
     }.getOrElse(NotFound)
   }
@@ -36,28 +39,26 @@ object Books extends Controller {
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
-        Book.create(name = form.name, isbn = form.isbn)
-        val books = Book.all()
+        bookRepository.create(name = form.name, isbn = form.isbn)
+        val books = bookRepository.all()
         Ok(views.html.list(books.sortBy(_.id)))
       })
   }
 
-  def update(id: Long) = Action { implicit request =>
+  def update(id: String) = Action { implicit request =>
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
         val book = Book(id, form.name, form.isbn)
-        book.save
-        val books = Book.all()
+        bookRepository.save(book)
+        val books = bookRepository.all()
         Ok(views.html.list(books.sortBy(_.id)))
       })
   }
 
-  def delete(id: Long) = Action {
-    Book.find(id).map { book =>
-      book.destroy()
-      NoContent
-    }.getOrElse(NotFound)
+  def delete(id: String) = Action {
+    bookRepository.destroy(id)
+    NoContent
   }
 
 }

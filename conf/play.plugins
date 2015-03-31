@@ -1,3 +1,5 @@
+500:se.radley.plugin.salat.SalatPlugin
+
 1000:com.github.tototoshi.play2.flyway.Plugin
 
 10500:scalikejdbc.PlayPlugin
