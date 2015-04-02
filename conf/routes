@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                           @controllers.Application.index
 
 # Book
 GET     /v1/books/                       controllers.Books.all
@@ -12,6 +12,13 @@ POST    /v1/books/:id                    controllers.Books.update(id: Long)
 GET     /v1/books/new/                   controllers.Books.create
 POST    /v1/books/                       controllers.Books.save
 DELETE  /v1/books/:id                    controllers.Books.delete(id: Long)
+
+GET        /custom/login        @controllers.CustomLoginController.login
+GET        /custom/logout       @controllers.CustomLoginController.logout
+
+# Providers entry points
+GET     /authenticate/:provider     @securesocial.controllers.ProviderController.authenticate(provider)
+POST    /authenticate/:provider     @securesocial.controllers.ProviderController.authenticateByPost(provider)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

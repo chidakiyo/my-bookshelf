@@ -37,5 +37,11 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.1.2"
 )
 
+resolvers += Resolver.sonatypeRepo("snapshots")
+
+libraryDependencies ++= Seq(
+    "ws.securesocial" %% "securesocial" % "master-SNAPSHOT"
+)
+
 // This may not be needed in development, also you cannot view in-memory h2 database with using h2-browser if process is forked.
 //fork in run := true
