@@ -18,6 +18,8 @@ object Global extends play.api.GlobalSettings {
     override lazy val providers = ListMap( //
       include(new GoogleProvider(routes, cacheService, oauth2ClientFor(GoogleProvider.Google))) // google only
       )
+
+    override lazy val viewTemplates = new plugin.CustomTemplatesPlugin(this)
   }
 
   /**
