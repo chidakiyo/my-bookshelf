@@ -1,7 +1,4 @@
 @(loginForm: play.api.data.Form[(String,String)], errorMsg: Option[String] = None)(implicit request: play.api.mvc.RequestHeader, env: securesocial.core.RuntimeEnvironment[_])
-@import helper._
-@import securesocial.core.AuthenticationMethod._
-@import securesocial.core.providers.UsernamePasswordProvider.UsernamePassword
 
 @main("my-bookshelf") {
     <div class="page-header">
@@ -27,11 +24,10 @@
     }
 
 
-@defining( env.providers.values.filter( _.id != UsernamePassword) ) { externalProviders =>
-
+@defining( env.providers.values ) { externalProviders =>
         @if( externalProviders.size > 0 ) {
             <div class="clearfix">
-                <h3>@Messages("securesocial.login.instructions")</h3>
+                <h3>お持ちのアカウントでログイン</h3>
                 <p>
                     @for(p <- externalProviders) {
                         @provider(p.id)

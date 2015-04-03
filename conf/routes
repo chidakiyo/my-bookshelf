@@ -13,8 +13,9 @@ GET     /v1/books/new/                   controllers.Books.create
 POST    /v1/books/                       controllers.Books.save
 DELETE  /v1/books/:id                    controllers.Books.delete(id: Long)
 
-GET        /custom/login        @controllers.CustomLoginController.login
-GET        /custom/logout       @controllers.CustomLoginController.logout
+# Auth
+GET     /login                      @controllers.AuthLoginController.login
+GET     /logout                     @controllers.AuthLoginController.logout
 
 # Providers entry points
 GET     /authenticate/:provider     @securesocial.controllers.ProviderController.authenticate(provider)

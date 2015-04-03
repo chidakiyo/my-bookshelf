@@ -1,4 +1,4 @@
-import controllers.CustomRoutesService
+import controllers.AuthRoutesService
 import java.lang.reflect.Constructor
 import securesocial.core.RuntimeEnvironment
 import scala.collection.immutable.ListMap
@@ -13,13 +13,13 @@ object Global extends play.api.GlobalSettings {
    */
   object MyRuntimeEnvironment extends RuntimeEnvironment.Default[DemoUser] {
     override implicit val executionContext = play.api.libs.concurrent.Execution.defaultContext
-    override lazy val routes = new CustomRoutesService()
+    override lazy val routes = new AuthRoutesService()
     override lazy val userService = new InMemoryUserService()
     override lazy val providers = ListMap( //
       include(new GoogleProvider(routes, cacheService, oauth2ClientFor(GoogleProvider.Google))) // google only
       )
 
-    override lazy val viewTemplates = new plugin.CustomTemplatesPlugin(this)
+    override lazy val viewTemplates = new plugin.AuthTemplatesPlugin(this)
   }
 
   /**

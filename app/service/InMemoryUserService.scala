@@ -64,6 +64,7 @@ class InMemoryUserService extends UserService[DemoUser] {
   }
 
   def save(user: BasicProfile, mode: SaveMode): Future[DemoUser] = {
+    logger.info(user.toString)
     mode match {
       case SaveMode.SignUp =>
         val newUser = DemoUser(user, List(user))

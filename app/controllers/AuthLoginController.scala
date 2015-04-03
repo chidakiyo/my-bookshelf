@@ -7,13 +7,13 @@ import securesocial.core.{ RuntimeEnvironment, IdentityProvider }
 import service.DemoUser
 import securesocial.core.services.RoutesService
 
-class CustomLoginController(implicit override val env: RuntimeEnvironment[DemoUser]) extends BaseLoginPage[DemoUser] {
+class AuthLoginController(implicit override val env: RuntimeEnvironment[DemoUser]) extends BaseLoginPage[DemoUser] {
   override def login: Action[AnyContent] = {
     Logger.debug("using CustomLoginController")
     super.login
   }
 }
 
-class CustomRoutesService extends RoutesService.Default {
-  override def loginPageUrl(implicit req: RequestHeader): String = controllers.routes.CustomLoginController.login().absoluteURL(IdentityProvider.sslEnabled)
+class AuthRoutesService extends RoutesService.Default {
+  override def loginPageUrl(implicit req: RequestHeader): String = controllers.routes.AuthLoginController.login().absoluteURL(IdentityProvider.sslEnabled)
 }

@@ -1,0 +1,11 @@
+@(providerId: String, loginForm: Option[Form[(String, String)]] = None)(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment[_])
+
+@import securesocial.core.AuthenticationMethod._
+
+@env.providers.get(providerId).map { provider =>
+    @if( provider.authMethod == OAuth1 || provider.authMethod == OAuth2 ) {
+        @defining( "images/providers/%s.png".format(provider.id) ) { imageUrl =>
+            <a href="@env.routes.authenticationUrl(provider.id)"> <img src="@controllers.routes.Assets.at(imageUrl)"/></a>
+        }
+    }
+}
