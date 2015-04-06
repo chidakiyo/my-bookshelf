@@ -24,11 +24,9 @@ object Book {
 
   def findAll(): List[Book] = registry
 
-  def create(name: String, isbn: String, createdAt: DateTime = DateTime.now): Book = {
-    val maxId = registry.map(_.id).max
-    val book = Book(maxId + 1, name, isbn, createdAt)
-    registry = book :: registry
-    book
+  def save(id: Long = registry.map(_.id).max + 1, name: String, isbn: String, createdAt: DateTime = DateTime.now): Book = {
+    val book = Book(id, name, isbn, createdAt)
+    save(book)
   }
 
   def save(m: Book): Book = {

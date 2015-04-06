@@ -1,19 +1,14 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
 import models._
 import play.api.data._
 import play.api.data.Forms._
-import org.joda.time.DateTime
-import org.json4s._, ext.JodaTimeSerializers, native.JsonMethods._
-import com.github.tototoshi.play2.json4s.native._
+import api.JsonApi
 
 case class BookForm(name: String, isbn: String)
 
-object Books extends Controller with Json4s {
-
-  implicit val formats = DefaultFormats ++ JodaTimeSerializers.all
+object Books extends JsonApi {
 
   val bookForm = Form(
     mapping( //
@@ -22,19 +17,24 @@ object Books extends Controller with Json4s {
       )(BookForm.apply)(BookForm.unapply))
 
   def all() = Action {
-    Ok(Extraction.decompose(Book.findAll))
+    json {
+      Book.findAll
+    }
   }
 
   def show(id: Long) = Action {
-    Book.find(id).map { book => Ok(Extraction.decompose(book)) }.getOrElse(NotFound)
+    json {
+      Book.find(id)
+    }
   }
 
   def create() = Action { implicit request =>
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
-        Book.create(name = form.name, isbn = form.isbn)
-        NoContent
+        json {
+          Book.save(name = form.name, isbn = form.isbn)
+        }
       })
   }
 
@@ -42,17 +42,16 @@ object Books extends Controller with Json4s {
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
-        val book = Book(id, form.name, form.isbn, new DateTime())
-        book.save
-        NoContent
+        json {
+          Book.save(id = id, name = form.name, isbn = form.isbn)
+        }
       })
   }
 
   def delete(id: Long) = Action {
-    Book.find(id).map { book =>
-      book.destroy()
-      NoContent
-    }.getOrElse(NotFound)
+    json {
+      Book.destroy(id)
+    }
   }
 
 }
