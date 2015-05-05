@@ -1,15 +1,14 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
 import models._
 import play.api.data._
 import play.api.data.Forms._
-import org.joda.time.DateTime
+import api.JsonApi
 
 case class BookForm(name: String, isbn: String)
 
-object Books extends Controller {
+object Books extends JsonApi {
 
   val bookForm = Form(
     mapping( //
@@ -18,27 +17,24 @@ object Books extends Controller {
       )(BookForm.apply)(BookForm.unapply))
 
   def all() = Action {
-    val books = Book.findAll()
-    Ok(views.html.list(books.sortBy(_.id)))
+    json {
+      Book.findAll
+    }
   }
 
-  def create() = Action {
-    Ok(views.html.createForm(bookForm))
+  def show(id: Long) = Action {
+    json {
+      Book.find(id)
+    }
   }
 
-  def edit(id: Long) = Action {
-    Book.find(id).map { book =>
-      Ok(views.html.editForm(id, bookForm.fill(BookForm(book.name, book.isbn))))
-    }.getOrElse(NotFound)
-  }
-
-  def save() = Action { implicit req =>
+  def create() = Action { implicit request =>
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
-        Book.create(name = form.name, isbn = form.isbn)
-        val books = Book.findAll()
-        Ok(views.html.list(books.sortBy(_.id)))
+        json {
+          Book.save(name = form.name, isbn = form.isbn)
+        }
       })
   }
 
@@ -46,18 +42,16 @@ object Books extends Controller {
     bookForm.bindFromRequest.fold(
       formWithErrors => BadRequest("invalid parameters"),
       form => {
-        val book = Book(id, form.name, form.isbn, new DateTime())
-        book.save
-        val books = Book.findAll()
-        Ok(views.html.list(books.sortBy(_.id)))
+        json {
+          Book.save(id = id, name = form.name, isbn = form.isbn)
+        }
       })
   }
 
   def delete(id: Long) = Action {
-    Book.find(id).map { book =>
-      book.destroy()
-      NoContent
-    }.getOrElse(NotFound)
+    json {
+      Book.destroy(id)
+    }
   }
 
 }
